@@ -85,6 +85,20 @@ def apply_kernel(image, kernel):
 
     return new_img
 
+def combine_images(image1, image2):
+    # combines images using the squared sum of squares
+    # size of image1 and image2 MUST be the same
+    x_pixels, y_pixels, num_channels = image1.array.shape
+    new_img = Image(x_pixels=x_pixels, y_pixels=y_pixels, num_channels=num_channels)
+
+    for x in range(x_pixels):
+        for y in range(y_pixels):
+            for c in range(num_channels):
+                new_img.array[x, y, c] = (image1.array[x, y, c]**2 + image2.array[x, y, c]**2)**0.5
+    
+    return new_img
+
+
 if __name__ == "__main__":
     lake = Image(filename="lake.png")
     city = Image(filename="city.png")
@@ -127,6 +141,11 @@ if __name__ == "__main__":
     ])
 
     sobel_x = apply_kernel(city, sobel_x_kernel)
-    sobel_x.write_image("edge_x.png")
+    # sobel_x.write_image("edge_x.png")
     sobel_y = apply_kernel(city, sobel_y_kernel)
-    sobel_y.write_image("edge_y.png")
+    # sobel_y.write_image("edge_y.png")
+
+    # lets combine sobel_x and sobel_y
+    # and make an edge detection filter
+    sobel_xy = combine_images(sobel_x, sobel_y)
+    sobel_xy.write_image("edge_xy.png")
